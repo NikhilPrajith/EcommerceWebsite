@@ -1,0 +1,27 @@
+.container{
+    width:100%;
+    min-height: 600px;
+    
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.container>div{
+    width:50%;
+}
+.leftSide{
+    width: 100%;
+    background-color: #ff6263;
+    background-image: url('https://images.pexels.com/photos/3965557/pexels-photo-3965557.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+    background-size: cover;
+}
+.name{
+    font-size:20px;
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 20px;
+}

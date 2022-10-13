@@ -1,0 +1,113 @@
+.name{
+    font-size:20px;
+    cursor: pointer;
+}
+.navbar{
+    padding-left:80px;
+    padding-right:80px;
+    padding-top:20px;
+    padding-bottom:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:15px;
+    box-shadow: 0 0.1px 2px 0 rgba(0, 0, 0, 0.41);
+}
+
+
+.navbar>div{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.options{
+    border-radius:25px;
+    /*border:0.3px rgb(161, 161, 161) solid;*/
+    padding-left:18px;
+    padding-top:8px;
+    padding-bottom:8px;
+    padding-right:18px;
+    margin-right:50px;
+    
+    
+}
+.options>div>div{
+    padding-left:10px;
+    padding-right:10px;
+    cursor: pointer;
+}
+.options>div>div:hover{
+    text-decoration: underline;
+}
+
+.loginButton{
+    color:white;
+    background:black;
+    border:none;
+    padding:8px;
+    padding-left:25px;
+    padding-right:25px;
+    border-radius:8px;
+    cursor: pointer;
+
+}
+.loginButton:hover{
+    opacity:0.7;
+}
+
+.profileButton{
+    color:black;
+    background:white;
+    border:none;
+    padding:7.5px;
+    padding-left:23.5px;
+    padding-right:23.5px;
+    border-radius:8px;
+    cursor: pointer;
+    border:1px black solid;
+}
+.profileButton:hover{
+    background-color: black;
+    color: white;
+}
+
+.profile{
+    padding-right:25px;
+    border-right:1.9px rgb(161, 161, 161) solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.shopping{
+    margin-left:25px;
+    margin-right:25px;
+    padding: 8px;
+    cursor: pointer;
+}
+.shopping:hover{
+    border-bottom:0.4px black solid;
+    padding-bottom: 7.6px;
+    opacity: 0.8;
+
+}
+
+.profilePic{
+    border-radius: 50%;
+    padding: 3px;
+    border:0.8px rgb(99, 97, 97) solid;
+    height: 38px;
+    width: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.profilePic>img{
+    width: 30px;
+    height:30px;
+    border-radius: 50%;
+}
+.signedInUser{
+    margin-right: 30px;
+    margin-left: 10px;
+    font-weight: 900;
+}
