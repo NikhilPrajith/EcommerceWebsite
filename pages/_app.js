@@ -1,5 +1,5 @@
 // import App from 'next/app'
-
+import '../styles/global.css'
 import { AuthProvider } from "../context/Authentication/AuthProvider"
 import AuthStateChanged from "../context/Authentication/AuthStateChanged";
 

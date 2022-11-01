@@ -1,0 +1,26 @@
+.review{
+    display: flex;
+    justify-content: space-evenly;
+    border-bottom-width: 1px;
+    --tw-border-opacity: 1;
+    border-color: rgb(229 231 235 / var(--tw-border-opacity));
+    margin-bottom: 70px;
+    padding-bottom: 30px;
+}
+.review>div{
+    width:100%;
+}
+.date{
+    font-size: 13px;
+    color: rgba(110, 108, 108, 0.55);
+    margin-top: 10px;
+}
+.para{
+    font-size: 13px;
+    color: rgba(110, 108, 108, 0.55);
+    margin-top: 10px;
+}
+.rating{
+    display: flex;
+    align-content: center;
+}

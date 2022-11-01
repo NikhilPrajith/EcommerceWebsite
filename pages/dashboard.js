@@ -7,6 +7,7 @@ import { signOut } from 'firebase/auth'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import useAuth from '../context/Authentication/AuthProvider'
+import Link from 'next/link'
 
 export default function Dashboard() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function Dashboard() {
     if(data.accountType == "Super User"){
       router.push("/admin")
     }else{
-
+      console.log(data)
     }
   },[data])
 
@@ -26,6 +27,16 @@ export default function Dashboard() {
 
   return (
     <div>
+        {data["status"]=="invalid" && <div>Your application for a OU account is under review. Please be patient!</div>}
+        {data["status"] =="active" && 
+          <div>
+            <div>You now have the access to submit product applications</div>
+            <div><Link href="/productApplications">List Product</Link></div>
+          </div>
+          
+        }
+
+
         <button onClick={logout}>Logout</button>
         <style jsx global>{`
             html, body {
