@@ -8,6 +8,10 @@ import { collection, query, where, getDocs,doc,getDoc } from "firebase/firestore
 import styles from "../styles/productDetails.module.css"
 import Rating from '@mui/material/Rating';
 import Footer from '../components/Footer/Footer'
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
 const product = {
   name: 'Basic Tee 6-Pack',
@@ -69,7 +73,23 @@ export default function ProductDetails({data}) {
   useEffect(() => {
     console.log(data.pictures)
   }, [])
-  
+  const breadcrumbs = [
+    <Link underline="hover" key="1" color="inherit" href="/">
+      Products
+    </Link>,
+    <Link
+      underline="hover"
+      key="2"
+      color="inherit"
+      href="/material-ui/getting-started/installation/"
+
+    >
+      {data.category}
+    </Link>,
+    <Typography key="3" color="text.primary">
+      {data.name}
+    </Typography>,
+  ];
 
   return (
     <>
@@ -77,21 +97,9 @@ export default function ProductDetails({data}) {
     <div className="bg-white">
       <div className="pt-6">
 
-        <h2 className='text-center font-black text-4xl'>
-          {data.name}
-        </h2>
-        {/*Breadcrumb
-        <nav aria-label="Breadcrumb">
-          <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-            <li className="text-sm">
-              <a href={product.href} aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
-                {data.name}
-              </a>
-            </li>
-          </ol>
-        </nav>
-        */}
-
+        <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8"><Breadcrumbs separator="›" aria-label="breadcrumb">
+          {breadcrumbs}
+        </Breadcrumbs></div>
         {/* Image gallery */}
         {data.pictures && (
         <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
@@ -248,12 +256,12 @@ export default function ProductDetails({data}) {
     <div className="mx-auto max-w-2xl px-4 pb-16 sm:px-6 lg:grid lg:max-w-7xl lg:gap-x-8 lg:px-8 lg:pb-24">
       <div className='flex justify-between items-center font-semibold lg:border-b lg:border-gray-200 lg:pr-8 pb-8 my-20'>
         <div className='font-semibold text-lg'>Recent reviews</div>
-        <button
+        <Button variant="outlined"
                 className="lg:border lg:border-gray-700 rounded-md border border-transparent
                  bg-white py-2 px-8 font-light text-black hover:bg-black hover:text-white"
               >
                 Write a review
-        </button>
+        </Button>
       </div>
       <div className={styles.review}>
         <div>

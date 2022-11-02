@@ -7,6 +7,7 @@ import { auth,db } from '../firebase-config'
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useEffect } from 'react'
 import Footer from '../components/Footer/Footer'
+import CategoryFilter from '../components/CategoryFilters/CategoryFilters'
 
 function Home({prods}) {
   useEffect(() => {
@@ -76,8 +77,11 @@ function Home({prods}) {
       <Navbar></Navbar>
       <Promo></Promo>
       {/*<Banner></Banner>*/}
-      <ProductList products={prods}></ProductList>
+      {/*<ProductList products={prods}></ProductList>*/}
+      <CategoryFilter products={prods} ></CategoryFilter>
+
       <Footer></Footer>
+
     </div>
   )
 }
