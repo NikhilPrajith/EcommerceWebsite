@@ -1,21 +1,8 @@
-/*
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
 import { Fragment, useState } from 'react'
 import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
-import ProductList from '../Product/productList'
+import ProductGrid from '../Product/productGrid'
 
 const sortOptions = [
   { name: 'Most Popular', href: '#', current: true },
@@ -301,7 +288,7 @@ export default function CategoryFilter({products}) {
               {/* Product grid */}
               <div className="lg:col-span-3">
                 {/* Replace with your content */}
-                <ProductList products={products} type="categoryList"></ProductList>
+                <ProductGrid products={products} type="categoryList"></ProductGrid>
                 
                 {/* /End replace */}
               </div>

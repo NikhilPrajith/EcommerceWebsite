@@ -47,7 +47,7 @@ const Navbar = ({userName}) => {
                         <div className={styles.signedInUser}>{user ? user.displayName : "Guest"}</div>
 
                         {!data.accountType && (<div onClick={()=>{router.push("/login")}}  className={styles.loginButton}>Login</div>)}
-                        {data.accountType && data.accountType !='Guest' && (<div onClick={()=>{router.push("/dashboard")}}  className={styles.profileButton}>Profile</div>)}
+                        {data.accountType && data.accountType !='Guest' && (<div onClick={()=>{router.push(`/dashboard?user=${user.uid}`)}}  className={styles.profileButton}>Profile</div>)}
 
                     </div>
                     <div className={styles.shopping}>

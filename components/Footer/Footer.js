@@ -8,7 +8,7 @@ const Footer = ({}) => {
     return (
         <>
            <div className={styles.footer}>
-                <div>HyperCart</div>
+                <div>HypeCart</div>
             </div>
             
 

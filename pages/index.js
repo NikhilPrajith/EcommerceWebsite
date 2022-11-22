@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import Navbar from "../components/Navbar/Navbar"
 import Banner from "../components/Banner/Banner"
-import ProductList from "../components/Product/productList"
 import Promo from '../components/PromoSection/PromoSection'
 import { auth,db } from '../firebase-config'
 import { collection, query, where, getDocs } from "firebase/firestore";

@@ -1,10 +1,13 @@
-import { useState,useEffect } from 'react'
+import {Fragment, useState,useEffect, useRef } from 'react'
+import * as React from 'react';
+import { Dialog, Transition } from '@headlessui/react'
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import { StarIcon } from '@heroicons/react/20/solid'
 import { RadioGroup } from '@headlessui/react'
 import Navbar from '../components/Navbar/Navbar'
 import { useRouter } from 'next/router'
-import { db } from '../firebase-config'
-import { collection, query, where, getDocs,doc,getDoc } from "firebase/firestore";
+import { db,auth } from '../firebase-config'
+import { collection, query, where, getDocs,doc,getDoc,setDoc } from "firebase/firestore";
 import styles from "../styles/productDetails.module.css"
 import Rating from '@mui/material/Rating';
 import Footer from '../components/Footer/Footer'
@@ -12,6 +15,15 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import TextField from '@mui/joy/TextField';
+import Chip from '@mui/joy/Chip';
+import useAuth from '../context/Authentication/AuthProvider'
+import Box from '@mui/joy/Box';
+import Alert from '@mui/joy/Alert';
+import SideOverlay from '../components/SlideOverlays/SlideOverlays';
+
+/* For later: every change to the dahboard is edited on screen by auto refreshing the page */
+
 
 const product = {
   name: 'Basic Tee 6-Pack',
@@ -67,11 +79,18 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function ProductDetails({data}) {
+export default function ProductDetails({data,highestBidder,productId}) {
   const [selectedColor, setSelectedColor] = useState(product.colors[0])
   const [selectedSize, setSelectedSize] = useState(product.sizes[2])
+  const [open, setOpen] = useState(false);
+  const[bidPrice,setBidPrice] = useState(null);
+  const [bidSubmissionError, setbidSubmissionError] = useState(null);
+  const {user} = useAuth();
+  const cancelButtonRef = useRef(null);
+  const router = useRouter();
+  const [overlayOpen,setOverlayOpen] = useState(false);
+
   useEffect(() => {
-    console.log(data.pictures)
   }, [])
   const breadcrumbs = [
     <Link underline="hover" key="1" color="inherit" href="/">
@@ -90,6 +109,36 @@ export default function ProductDetails({data}) {
       {data.name}
     </Typography>,
   ];
+
+  const bidSubmission  = async () =>{
+    if(isNaN(bidPrice)|| bidPrice == null || bidPrice*1.0 <= data.price){
+      setbidSubmissionError("Invalid bid. Please check your value!")
+    }else{
+      
+      setbidSubmissionError("");
+      let bids={}
+      if ("Bids" in data){
+        bids = data["Bids"];
+      }
+      bids[user.uid] = bidPrice*1.0;
+
+      const productRef = doc(db, 'products',productId );
+      await setDoc(productRef, { price: bidPrice*1.0, Bids:bids }, { merge: true });
+
+      const userRef = doc(db, 'users', user.uid);
+      let bidPlaced={}
+      if ("bidPlaced" in user){
+        bidPlaced = user["bidPlaced"];
+      }
+      bidPlaced[productId] = bidPrice*1.0;
+
+      setDoc(userRef, { bidPlaced:bidPlaced}, { merge: true });  
+      setOpen(false);
+      router.replace(router.asPath);
+     return;
+
+    }
+  }
 
   return (
     <>
@@ -110,29 +159,29 @@ export default function ProductDetails({data}) {
               className="h-full w-full object-cover object-center"
             />
           </div>
-          <div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
-            <div className="aspect-w-3 aspect-h-2 overflow-hidden rounded-lg">
+          {data.pictures[1] &&(<div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
+          {data.pictures[1] &&(<div className="aspect-w-3 aspect-h-2 overflow-hidden rounded-lg">
               <img
-                style={{maxHeight:'200px'}}
+                style={{ maxHeight: !data.pictures[2]? '400px': '200px'}}
                 src={data.pictures[1]}
                 className="h-full w-full object-cover object-center"
               />
-            </div>
-            <div className="aspect-w-3 aspect-h-2 overflow-hidden rounded-lg">
+            </div>)}
+            {data.pictures[2] &&(<div className="aspect-w-3 aspect-h-2 overflow-hidden rounded-lg">
               <img
                 style={{maxHeight:'200px'}}
                 src={data.pictures[2]}
                 className="h-full w-full object-cover object-center"
               />
-            </div>
-          </div>
-          <div className="aspect-w-4 aspect-h-5 sm:overflow-hidden sm:rounded-lg lg:aspect-w-3 lg:aspect-h-4">
+            </div>)}
+          </div>)}
+          {data.pictures[3] &&(<div className="aspect-w-4 aspect-h-5 sm:overflow-hidden sm:rounded-lg lg:aspect-w-3 lg:aspect-h-4">
             <img
               style={{maxHeight:'400px'}}
               src={data.pictures[3]}
               className="h-full w-full object-cover object-center"
             />
-          </div>
+          </div>)}
         </div>) }
 
         {/* Product info */}
@@ -144,7 +193,11 @@ export default function ProductDetails({data}) {
           {/* Options */}
           <div className="mt-4 lg:row-span-3 lg:mt-0">
             <h2 className="sr-only">Product information</h2>
-            <p className="text-3xl tracking-tight text-gray-900">${data.price}</p>
+            { user && (highestBidder[1] === user.uid) &&(
+              <Alert style={{backgroundColor:'#DDF1FF',textAlign:'center',marginBottom:'10px'}} color="primary" size="sm" >You are the highest bidder</Alert>)}
+            <p style={{marginBottom:'10px'}}className="text-3xl tracking-tight text-gray-900"><div 
+              style={{fontSize: '14px',color: 'rgb(145, 145, 145)'}}
+              className="text-xl tracking-tight text-gray-900">Highest bid:</div> ${data.price}</p>
 
             {/* Reviews */}
             <div className="mt-6">
@@ -168,55 +221,104 @@ export default function ProductDetails({data}) {
                 </a>
               </div>
             </div>
+            <div style={{marginTop:'25px',color: 'rgb(145, 145, 145)'}}>
+                <span>Highest bidder:</span> {highestBidder[0]}
 
-            <form className="mt-10">
-              {/* Colors */}
-              {/*
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">Color</h3>
+            </div>
 
-                <RadioGroup value={selectedColor} onChange={setSelectedColor} className="mt-4">
-                  <RadioGroup.Label className="sr-only"> Choose a color </RadioGroup.Label>
-                  <div className="flex items-center space-x-3">
-                    {product.colors.map((color) => (
-                      <RadioGroup.Option
-                        key={color.name}
-                        value={color}
-                        className={({ active, checked }) =>
-                          classNames(
-                            color.selectedClass,
-                            active && checked ? 'ring ring-offset-1' : '',
-                            !active && checked ? 'ring-2' : '',
-                            '-m-0.5 relative p-0.5 rounded-full flex items-center justify-center cursor-pointer focus:outline-none'
-                          )
-                        }
-                      >
-                        <RadioGroup.Label as="span" className="sr-only">
-                          {' '}
-                          {color.name}{' '}
-                        </RadioGroup.Label>
-                        <span
-                          aria-hidden="true"
-                          className={classNames(
-                            color.class,
-                            'h-8 w-8 border border-black border-opacity-10 rounded-full'
-                          )}
-                        />
-                      </RadioGroup.Option>
-                    ))}
-                  </div>
-                </RadioGroup>
-              </div>
-                          */}
-              <button
+            <div className="mt-10">
+              {user && (<button
                 type="submit"
+                onClick={()=>{data['owner'] != user.uid && setOpen(true)}}
                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent
                  bg-black py-3 px-8 text-base font-medium text-white hover:bg-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+
+                style={{opacity: data['owner'] != user.uid? '1': '0.5',cursor: data['owner'] != user.uid? 'pointer': 'auto'}}
               >
-                Add to bag
-              </button>
-            </form>
-          </div>
+                Place a bid
+              </button>)}
+              <div onClick={()=>{setOverlayOpen(true)}} style={{cursor:'pointer',color: 'rgb(59 130 246)',fontSize: '13px',marginTop: '20px'}}>View all bids</div>
+
+
+              <Transition.Root show={open} as={Fragment}>
+                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                  </Transition.Child>
+
+                  <div className="fixed inset-0 z-10 overflow-y-auto">
+                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                      <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        enterTo="opacity-100 translate-y-0 sm:scale-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                        leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                      >
+                        <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div className="sm:flex sm:items-start">
+                              
+                              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                                  Type bid value
+                                </Dialog.Title>
+                                <div className="mt-2">
+                                  <p className="text-sm text-gray-500">
+                                    Make sure to be certain of the value you input for placing a bid on this product!
+                                  </p>
+                                </div>
+                                
+                                <div fullWidth style={{marginTop:'30px'}}>
+                                <div style={{marginBottom:'10px', fontSize:'12px', color:'red'}}>{bidSubmissionError}</div>
+                                  <TextField label="" placeholder="Type in here…" variant="outlined"
+                                    onChange={(evt)=>setBidPrice(evt.target.value)}
+                                    startDecorator={
+                                      <Chip style={{borderRadius:'10px'}} size="sm" variant="soft">
+                                         $
+                                      </Chip>
+                                    }
+                                  /></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                            <button
+                              type="button"
+                              className="inline-flex w-full justify-center rounded-md border border-transparent bg-black px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+                              onClick={() => bidSubmission()}
+                            >
+                              Submit
+                            </button>
+                            <button
+                              type="button"
+                              className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                              onClick={() => setOpen(false)}
+                              ref={cancelButtonRef}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </Dialog.Panel>
+                      </Transition.Child>
+                    </div>
+                  </div>
+                </Dialog>
+              </Transition.Root>
+            </div>
+          </div>  
+          {/*SlideOverlay for all bids*/}
+          <SideOverlay open={overlayOpen} setOpen={setOverlayOpen}></SideOverlay>
 
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pt-6 lg:pb-16 lg:pr-8">
             {/* Description and details */}
@@ -332,8 +434,8 @@ export default function ProductDetails({data}) {
 }
 
 export async function getServerSideProps(context) {
+  const id = await context.query.id;
   const getData1 = async ()=>{
-    const id = await context.query.id;
     const docRef = doc(db, "products", id);
     const docSnap = await getDoc(docRef);
     return docSnap.data()
@@ -341,11 +443,48 @@ export async function getServerSideProps(context) {
   }
   const data = await getData1();
   console.log("data",data);
+  let bidder = "No bids!"
+  let bidderId ="";
+  if ("Bids" in data){
+    console.log("bids exist");
+    let maxKey, maxValue = 0;
+    for(const [key, value] of Object.entries(data["Bids"])) {
+      if(value > maxValue) {
+        maxValue = value;
+        maxKey = key;
+      }
+    }
+    bidderId = maxKey;
+    const userRef = doc(db, "users", maxKey);
+    const docSnap = await getDoc(userRef);
+    const temp =  docSnap.data();
+    bidder = temp['name'];
+
+  }
+
   return {
     props: {
-          data: data
+          data: data,
+          highestBidder: [bidder,bidderId],
+          productId: id,
+
       }, // will be passed to the page component as props
   }
 
 }
 
+
+/*
+  This example requires some changes to your config:
+  
+  ```
+  // tailwind.config.js
+  module.exports = {
+    // ...
+    plugins: [
+      // ...
+      require('@tailwindcss/forms'),
+    ],
+  }
+  ```
+*/

@@ -28,7 +28,6 @@ export function AuthProvider(props){
 
     }
     const getData = async (uid)=>{
-        console.log("userr",uid);
         const {userData} = await AuthService.getUsersCollectionData(uid);
         await setData({...userData});
 
