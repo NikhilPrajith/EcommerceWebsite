@@ -93,14 +93,14 @@ export default function ProductDetails({data,highestBidder,productId}) {
   useEffect(() => {
   }, [])
   const breadcrumbs = [
-    <Link underline="hover" key="1" color="inherit" href="/">
+    <Link underline="hover" key="1" color="inherit" href="/filter?type=all">
       Products
     </Link>,
     <Link
       underline="hover"
       key="2"
       color="inherit"
-      href="/material-ui/getting-started/installation/"
+      href={`/filter?type=${data.category}`}
 
     >
       {data.category}
@@ -120,7 +120,7 @@ export default function ProductDetails({data,highestBidder,productId}) {
       if ("Bids" in data){
         bids = data["Bids"];
       }
-      bids[user.uid] = bidPrice*1.0;
+      bids[user.uid] = [bidPrice*1.0];
 
       const productRef = doc(db, 'products',productId );
       await setDoc(productRef, { price: bidPrice*1.0, Bids:bids }, { merge: true });
@@ -318,7 +318,7 @@ export default function ProductDetails({data,highestBidder,productId}) {
             </div>
           </div>  
           {/*SlideOverlay for all bids*/}
-          <SideOverlay open={overlayOpen} setOpen={setOverlayOpen}></SideOverlay>
+          <SideOverlay open={overlayOpen} setOpen={setOverlayOpen} data={data['Bids']}></SideOverlay>
 
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pt-6 lg:pb-16 lg:pr-8">
             {/* Description and details */}

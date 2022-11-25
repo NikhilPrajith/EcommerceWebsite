@@ -1,8 +1,8 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState,useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
-export default function SideOverlay({open,setOpen}) {
+export default function SideOverlay({open,setOpen,data}) {
   const randomImages =["https://images.pexels.com/photos/7794363/pexels-photo-7794363.jpeg?auto=compress&cs=tinysrgb&w=1200",
       "https://images.pexels.com/photos/10974541/pexels-photo-10974541.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
       "https://images.pexels.com/photos/7193709/pexels-photo-7193709.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
@@ -10,6 +10,9 @@ export default function SideOverlay({open,setOpen}) {
       "https://www.pexels.com/photo/close-up-photo-of-human-figurine-on-white-background-7593080/",
       "https://images.pexels.com/photos/7214789/pexels-photo-7214789.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
     ]
+  useEffect(() => {
+    console.log("asdausdhuasdajid",data);  
+  }, [])
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -65,15 +68,19 @@ export default function SideOverlay({open,setOpen}) {
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6">
                       {/* Replace with your content */}
-                      <div style={{width:'100%',display:'flex',height:'100px',paddingTop:'10px',paddingBottom:'10px',borderBottom:'0.8px grey solid',borderTop:'0.8px grey solid'}}>
-                        <div style={{width:'100%',height:'100%',display: 'flex',flexDirection: 'column', justifyContent: 'center'}}>
-                          <div style={{fontWeight:'900'}}>Name</div>
-                          <div>$ Price</div>
-                        </div>
-                        <div style={{width:'30%',height:'80px',overflow:'hidden'}}>
-                          <img src={randomImages[0]}></img>
-                        </div>
-                      </div>
+                      {data == null &&(<div style={{textAlign:'center',color:'grey'}}>No bids made!</div>)}
+                      {data != null && (<div>{Object.keys(data).map((key, index) => {
+                        return (
+                          <div style={{width:'100%',display:'flex',height:'100px',paddingTop:'10px',paddingBottom:'10px',borderBottom:'0.8px grey solid',borderTop:'0.8px grey solid'}}>
+                            <div style={{width:'100%',height:'100%',display: 'flex',flexDirection: 'column', justifyContent: 'center'}}>
+                              <div>Account id:<div style={{fontWeight:'900',fontSize:'10px'}}>{key}</div></div>
+                            </div>
+                            <div style={{width:'30%',height:'80px',overflow:'hidden',display: 'flex',flexDirection: 'column', justifyContent: 'center'}}>
+                              <div>$ {data[key]}</div>
+                            </div>
+                          </div>
+                        );
+                      })}</div>)}
 
                       {/* /End replace */}
                     </div>

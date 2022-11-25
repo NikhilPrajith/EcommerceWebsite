@@ -12,11 +12,11 @@ const sortOptions = [
   { name: 'Price: High to Low', href: '#', current: false },
 ]
 const subCategories = [
-  { name: 'Electronics', href: '#' },
-  { name: 'Clothing', href: '#' },
-  { name: 'Kitchen Appliances', href: '#' },
-  { name: 'Beauty Products', href: '#' },
-  { name: 'School Supplies', href: '#' },
+  { name: 'Electronics', href: '/filter?type=Electronics' },
+  { name: 'Clothing', href: '/filter?type=Clothing' },
+  { name: 'Kitchen Appliances', href: '/filter?type=Kitchen' },
+  { name: 'Beauty Products', href: '/filter?type=Beauty' },
+  { name: 'School Supplies', href: '/filter?type=School' },
 ]
 const filters = [
   {
