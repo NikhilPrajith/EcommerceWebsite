@@ -14,6 +14,7 @@ import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import TabView from "../components/DashboardTabViews/TabView"
+import UserInfo from '../components/UserInfoCard/UserInfo';
 
 
 export default function Dashboard({products}) {
@@ -63,18 +64,19 @@ export default function Dashboard({products}) {
 
   return (
     <div>
+        <NavbarTwo></NavbarTwo>
         {data["status"]=="invalid" && <div>Your application for a OU account is under review. Please be patient!</div>}
+        <UserInfo></UserInfo>
         {data["status"] =="active" && 
           <div>
-            <NavbarTwo></NavbarTwo>
+
             <div>You now have the access to submit product applications</div>
             <span onClick={()=>{setOpen(true)}} style ={{border:'1px black solid'}}>List Product</span>
             <TabView products={products}></TabView>
           </div>
           
         }
-
-
+        
         <button onClick={logout}>Logout</button>
         
 
