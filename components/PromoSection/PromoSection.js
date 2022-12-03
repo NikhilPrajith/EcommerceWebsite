@@ -1,3 +1,6 @@
+import Link from "next/link"
+import React from "react"
+
 export default function Promo() {
     return (
       <div className="relative overflow-hidden bg-white">
@@ -64,12 +67,12 @@ export default function Promo() {
                   </div>
                 </div>
   
-                <a
+                <Link href="/products"><a
                   href="#"
                   className="inline-block rounded-md border border-transparent bg-black py-3 px-8 text-center font-medium text-white"
                 >
-                  Shop Collection
-                </a>
+                  Shop All
+                </a></Link>
               </div>
             </div>
           </div>

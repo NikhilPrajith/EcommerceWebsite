@@ -21,6 +21,7 @@ import useAuth from '../context/Authentication/AuthProvider'
 import Box from '@mui/joy/Box';
 import Alert from '@mui/joy/Alert';
 import SideOverlay from '../components/SlideOverlays/SlideOverlays';
+import ReviewForm from '../components/ReviewForm/ReviewForm';
 
 /* For later: every change to the dahboard is edited on screen by auto refreshing the page */
 
@@ -73,22 +74,24 @@ const product = {
   details:
     'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
 }
-const reviews = { href: '#', average: 2, totalCount: 117 }
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function ProductDetails({data,highestBidder,productId}) {
+export default function ProductDetails({reviews, prodData,highestBidder,productId}) {
   const [selectedColor, setSelectedColor] = useState(product.colors[0])
   const [selectedSize, setSelectedSize] = useState(product.sizes[2])
   const [open, setOpen] = useState(false);
   const[bidPrice,setBidPrice] = useState(null);
   const [bidSubmissionError, setbidSubmissionError] = useState(null);
-  const {user} = useAuth();
+  const {user,data} = useAuth();
   const cancelButtonRef = useRef(null);
   const router = useRouter();
   const [overlayOpen,setOverlayOpen] = useState(false);
+  const [reviewOpen,setReviewOpen] = useState(false);
+  const reviewCancelButtonRef = useRef(null);
+
 
   useEffect(() => {
   }, [])
@@ -100,25 +103,25 @@ export default function ProductDetails({data,highestBidder,productId}) {
       underline="hover"
       key="2"
       color="inherit"
-      href={`/filter?type=${data.category}`}
+      href={`/filter?type=${prodData.category}`}
 
     >
-      {data.category}
+      {prodData.category}
     </Link>,
     <Typography key="3" color="text.primary">
-      {data.name}
+      {prodData.name}
     </Typography>,
   ];
 
   const bidSubmission  = async () =>{
-    if(isNaN(bidPrice)|| bidPrice == null || bidPrice*1.0 <= data.price){
+    if(isNaN(bidPrice)|| bidPrice == null || bidPrice*1.0 <= prodData.price){
       setbidSubmissionError("Invalid bid. Please check your value!")
     }else{
       
       setbidSubmissionError("");
       let bids={}
-      if ("Bids" in data){
-        bids = data["Bids"];
+      if ("Bids" in prodData){
+        bids = prodData["Bids"];
       }
       bids[user.uid] = [bidPrice*1.0];
 
@@ -142,6 +145,7 @@ export default function ProductDetails({data,highestBidder,productId}) {
 
   return (
     <>
+    <ReviewForm productId={productId} name={data['name']} open={reviewOpen} setOpen={setReviewOpen} cancelButtonRef={reviewCancelButtonRef}></ReviewForm>
     <Navbar></Navbar>
     <div className="bg-white">
       <div className="pt-6">
@@ -150,35 +154,35 @@ export default function ProductDetails({data,highestBidder,productId}) {
           {breadcrumbs}
         </Breadcrumbs></div>
         {/* Image gallery */}
-        {data.pictures && (
+        {prodData.pictures && (
         <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
           <div className="aspect-w-3 aspect-h-4 hidden overflow-hidden rounded-lg lg:block">
             <img
               style={{maxHeight:'400px'}}
-              src={data.pictures[0]}
+              src={prodData.pictures[0]}
               className="h-full w-full object-cover object-center"
             />
           </div>
-          {data.pictures[1] &&(<div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
-          {data.pictures[1] &&(<div className="aspect-w-3 aspect-h-2 overflow-hidden rounded-lg">
+          {prodData.pictures[1] &&(<div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
+          {prodData.pictures[1] &&(<div className="aspect-w-3 aspect-h-2 overflow-hidden rounded-lg">
               <img
-                style={{ maxHeight: !data.pictures[2]? '400px': '200px'}}
-                src={data.pictures[1]}
+                style={{ maxHeight: !prodData.pictures[2]? '400px': '200px'}}
+                src={prodData.pictures[1]}
                 className="h-full w-full object-cover object-center"
               />
             </div>)}
-            {data.pictures[2] &&(<div className="aspect-w-3 aspect-h-2 overflow-hidden rounded-lg">
+            {prodData.pictures[2] &&(<div className="aspect-w-3 aspect-h-2 overflow-hidden rounded-lg">
               <img
                 style={{maxHeight:'200px'}}
-                src={data.pictures[2]}
+                src={prodData.pictures[2]}
                 className="h-full w-full object-cover object-center"
               />
             </div>)}
           </div>)}
-          {data.pictures[3] &&(<div className="aspect-w-4 aspect-h-5 sm:overflow-hidden sm:rounded-lg lg:aspect-w-3 lg:aspect-h-4">
+          {prodData.pictures[3] &&(<div className="aspect-w-4 aspect-h-5 sm:overflow-hidden sm:rounded-lg lg:aspect-w-3 lg:aspect-h-4">
             <img
               style={{maxHeight:'400px'}}
-              src={data.pictures[3]}
+              src={prodData.pictures[3]}
               className="h-full w-full object-cover object-center"
             />
           </div>)}
@@ -187,7 +191,7 @@ export default function ProductDetails({data,highestBidder,productId}) {
         {/* Product info */}
         <div className="mx-auto max-w-2xl px-4 pt-10 pb-16 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pt-16 lg:pb-12">
           <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{data.name}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{prodData.name}</h1>
           </div>
 
           {/* Options */}
@@ -197,7 +201,7 @@ export default function ProductDetails({data,highestBidder,productId}) {
               <Alert style={{backgroundColor:'#DDF1FF',textAlign:'center',marginBottom:'10px'}} color="primary" size="sm" >You are the highest bidder</Alert>)}
             <p style={{marginBottom:'10px'}}className="text-3xl tracking-tight text-gray-900"><div 
               style={{fontSize: '14px',color: 'rgb(145, 145, 145)'}}
-              className="text-xl tracking-tight text-gray-900">Highest bid:</div> ${data.price}</p>
+              className="text-xl tracking-tight text-gray-900">Highest bid:</div> ${prodData.price}</p>
 
             {/* Reviews */}
             <div className="mt-6">
@@ -208,16 +212,16 @@ export default function ProductDetails({data,highestBidder,productId}) {
                     <StarIcon
                       key={rating}
                       className={classNames(
-                        reviews.average > rating ? 'text-gray-900' : 'text-gray-200',
+                        reviews[1] > rating ? 'text-gray-900' : 'text-gray-200',
                         'h-5 w-5 flex-shrink-0'
                       )}
                       aria-hidden="true"
                     />
                   ))}
                 </div>
-                <p className="sr-only">{reviews.average} out of 5 stars</p>
-                <a href={reviews.href} className="ml-3 text-sm font-medium text-blue-600 hover:text-blue-500">
-                  {reviews.totalCount} reviews
+                <p className="sr-only">{reviews[1]} out of 5 stars</p>
+                <a className="ml-3 text-sm font-medium text-blue-600 hover:text-blue-500">
+                  {reviews[0].length} reviews
                 </a>
               </div>
             </div>
@@ -229,11 +233,11 @@ export default function ProductDetails({data,highestBidder,productId}) {
             <div className="mt-10">
               {user && (<button
                 type="submit"
-                onClick={()=>{data['owner'] != user.uid && setOpen(true)}}
+                onClick={()=>{prodData['owner'] != user.uid && setOpen(true)}}
                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent
                  bg-black py-3 px-8 text-base font-medium text-white hover:bg-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 
-                style={{opacity: data['owner'] != user.uid? '1': '0.5',cursor: data['owner'] != user.uid? 'pointer': 'auto'}}
+                style={{opacity: prodData['owner'] != user.uid? '1': '0.5',cursor: prodData['owner'] != user.uid? 'pointer': 'auto'}}
               >
                 Place a bid
               </button>)}
@@ -318,7 +322,7 @@ export default function ProductDetails({data,highestBidder,productId}) {
             </div>
           </div>  
           {/*SlideOverlay for all bids*/}
-          <SideOverlay open={overlayOpen} setOpen={setOverlayOpen} data={data['Bids']}></SideOverlay>
+          <SideOverlay open={overlayOpen} setOpen={setOverlayOpen} prodData={prodData['Bids']}></SideOverlay>
 
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pt-6 lg:pb-16 lg:pr-8">
             {/* Description and details */}
@@ -326,7 +330,7 @@ export default function ProductDetails({data,highestBidder,productId}) {
               <h3 className="sr-only">Description</h3>
 
               <div className="space-y-6">
-                <p className="text-base text-gray-900">{data.description}</p>
+                <p className="text-base text-gray-900">{prodData.description}</p>
               </div>
             </div>
             {/*Highlights
@@ -348,7 +352,7 @@ export default function ProductDetails({data,highestBidder,productId}) {
               <h2 className="text-sm font-medium text-gray-900">Details</h2>
 
               <div className="mt-4 space-y-6">
-                <p className="text-sm text-gray-600">{data.detail}</p>
+                <p className="text-sm text-gray-600">{prodData.detail}</p>
               </div>
             </div>
           </div>
@@ -358,75 +362,29 @@ export default function ProductDetails({data,highestBidder,productId}) {
     <div className="mx-auto max-w-2xl px-4 pb-16 sm:px-6 lg:grid lg:max-w-7xl lg:gap-x-8 lg:px-8 lg:pb-24">
       <div className='flex justify-between items-center font-semibold lg:border-b lg:border-gray-200 lg:pr-8 pb-8 my-20'>
         <div className='font-semibold text-lg'>Recent reviews</div>
-        <Button variant="outlined"
-                className="lg:border lg:border-gray-700 rounded-md border border-transparent
-                 bg-white py-2 px-8 font-light text-black hover:bg-black hover:text-white"
+        <Button onClick={()=>{setReviewOpen(true)}} variant="outlined" 
               >
                 Write a review
         </Button>
       </div>
-      <div className={styles.review}>
-        <div>
-            <div>Namgyal T</div>
-            <div className={styles.date}>April 6, 2021</div>
-        </div>
-        <div>
-            <div className={styles.rating}><Rating name="read-only" value={3} readOnly /><span style={{paddingLeft:'12px'}}>3</span></div>
-
-        </div>
-        <div>
-            <div>Very comfy and does it's job</div>
-            <div className={styles.para}>After a quick chat with customer suoport. I had a good feelina about this shirt and
-              orderad thras of than Less than 48 hours later, my delivery arrived. I haven't worn anything else since that
-              day! These shirts are so comfortable, yet look classy enough that I can wear them at
-              work or even some formal events Winnina</div>
-        </div>
-      </div>
-      <div className={styles.review}>
-        <div>
-            <div>Risko M</div>
-            <div className={styles.date}>May 16, 2021</div>
-        </div>
-        <div>
-          <div className={styles.rating}><Rating name="read-only" value={4} readOnly /><span style={{paddingLeft:'12px'}}>4</span></div>
-
-        </div>
-        <div>
-            <div>Can't say enough good things</div>
-            <div className={styles.para}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
-              labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco</div>
-        </div>
-      </div>
-      <div className={styles.review}>
-        <div>
-            <div>Risko M</div>
-            <div className={styles.date}>May 16, 2021</div>
-        </div>
-        <div>
-          <div className={styles.rating}><Rating name="read-only" value={4} readOnly /><span style={{paddingLeft:'12px'}}>4</span></div>
-
-        </div>
-        <div>
-            <div>Can't say enough good things</div>
-            <div className={styles.para}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
-              labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco</div>
-        </div>
-      </div>
-      <div className={styles.review}>
-        <div>
-            <div>Risko M</div>
-            <div className={styles.date}>May 16, 2021</div>
-        </div>
-        <div>
-          <div className={styles.rating}><Rating name="read-only" value={4} readOnly /><span style={{paddingLeft:'12px'}}>4</span></div>
-
-        </div>
-        <div>
-            <div>Can't say enough good things</div>
-            <div className={styles.para}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
-              labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco</div>
-        </div>
-      </div>
+      {reviews[0].map((review) => (
+              <div className={styles.review}>
+              <div>
+                  <div>{review['name']}</div>
+                  <div className={styles.date}>{review.date}</div>
+              </div>
+              <div>
+                  <div className={styles.rating}><Rating name="read-only" value={review['rating']} readOnly /><span style={{paddingLeft:'12px'}}>{review['rating']}</span></div>
+      
+              </div>
+              <div>
+                  <div>{review.title}</div>
+                  <div className={styles.para}>{review.description}</div>
+              </div>
+            </div>
+      ))}
+      {reviews[0].length ==0 &&(<div style={{padding: '50px', backgroundColor: 'rgb(238, 238, 238)',color: 'rgb(116, 116, 116)',textAlign: 'center',borderRadius: '8px'}}>
+        Be the first to leave a review!</div>)}
     </div>
     <Footer></Footer>
     </>
@@ -442,6 +400,26 @@ export async function getServerSideProps(context) {
 
   }
   const data = await getData1();
+
+  const getReviews = async () =>{
+    const q = query(collection(db, "reports"), where("productId", "==", id));
+    const querySnapshot = await getDocs(q);
+    let reviews =[];
+    let count = 0;
+    querySnapshot.forEach((doc) => {
+      console.log(doc.id, " => ", doc.data());
+      const reviewData = doc.data();
+      if (reviewData['category'] == 'Product'){
+        reviews.push(doc.data())
+        count+=reviewData['rating']
+      }
+    });
+
+    return [reviews,Math.floor(count/reviews.length)]
+  
+  }
+  const reviewDetails= await getReviews();
+
   console.log("data",data);
   let bidder = "No bids!"
   let bidderId ="";
@@ -461,12 +439,12 @@ export async function getServerSideProps(context) {
     bidder = temp['name'];
 
   }
-
   return {
     props: {
-          data: data,
+          prodData: data,
           highestBidder: [bidder,bidderId],
           productId: id,
+          reviews: reviewDetails,
 
       }, // will be passed to the page component as props
   }

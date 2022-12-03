@@ -1,13 +1,13 @@
 .bannerTop{
     background-image: url('https://images.pexels.com/photos/12025443/pexels-photo-12025443.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
-    min-height:350px;
+    min-height:230px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 .search{
     background-color: white;
-    padding: 15px;
+    padding: 3px;
     padding-left: 25px;
     padding-right: 25px;
     display: flex;
@@ -19,7 +19,7 @@
     box-shadow: 0px 0px 10px 3px #00000026;
 }
 .search>input{
-    border: none;
+    border: none !important;
     margin-left: 15px;
     outline:none;
     min-width: 350px;
@@ -27,6 +27,10 @@
     border-right: 0.3px grey solid;
 
 }
+.inputBox:focus{
+    outline: none !important;
+}
+
 .dropbtn {
     color: grey;
     border: none;
