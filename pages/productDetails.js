@@ -123,7 +123,7 @@ export default function ProductDetails({reviews, prodData,highestBidder,productI
       if ("Bids" in prodData){
         bids = prodData["Bids"];
       }
-      bids[user.uid] = [bidPrice*1.0];
+      bids[user.uid] = bidPrice*1.0;
 
       const productRef = doc(db, 'products',productId );
       await setDoc(productRef, { price: bidPrice*1.0, Bids:bids }, { merge: true });

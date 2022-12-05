@@ -22,7 +22,10 @@ export default function ProductList({products}) {
         sx={{ width: '100%', bgcolor: 'white' }}
         >
         {products.map((product) => (
+            <>
             <CollapseCard product={product}></CollapseCard>
+            <hr/>
+            </>
 
         ))}
         </List>

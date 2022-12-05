@@ -31,9 +31,9 @@ export default function CollapseCard({product}) {
     const statuss = "Rejected";
     return(
         <>
-        <ListItemButton onClick={handleClick}>
+        <ListItemButton style={{}} onClick={handleClick}>
             <ListItemIcon>
-                <div style={{border:'0.5px grey solid', borderRadius:'8px', marginRight:'30px'}}>
+                <div style={{borderRadius:'8px', marginRight:'30px'}}>
                     <img
                         style={{height:'100px', width:'100px',borderRadius:'8px'}}
                         src={product.data.pictures[0]}
@@ -43,7 +43,7 @@ export default function CollapseCard({product}) {
             <ListItemText primary={product.data.name} />
             {product.data.status == "Accepted" && (<div style={{marginRight:'12px',backgroundColor:'rgb(222, 254, 222)',padding:'10px',borderRadius:'5px'}}>Approved</div>)}
             {product.data.status == "Rejected" && (<div style={{marginRight:'12px',backgroundColor:'rgb(255, 223, 223)',padding:'10px',borderRadius:'5px'}}>Rejected</div>)}
-            {product.data.status == "Pending" && (<div style={{marginRight:'12px',backgroundColor:'rgb(233, 233, 233)',padding:'10px',borderRadius:'5px'}}>Approved</div>)}
+            {product.data.status == "Pending" && (<div style={{marginRight:'12px',backgroundColor:'rgb(233, 233, 233)',padding:'10px',borderRadius:'5px'}}>Pending</div>)}
             {open ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
 
