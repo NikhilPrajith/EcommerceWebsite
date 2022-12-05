@@ -14,38 +14,7 @@ import StarBorder from '@mui/icons-material/StarBorder';
 import styles from './collapsableCard.module.css';
 
 
-// for this function I cant seem to get it to work in the collapsed card so that it prints depending on if the item was approved/rejected/pending
-const Status = ({status}) => {
-    
-    if (status = "Approved"){
-        return(
-            <div id="test" className={styles.container} style={{backgroundColor:'green'}}>
-                <p className={styles.status}>
-                   approved
-                </p> 
-            </div>
-        )
-    }
-    else if (status = "Reject"){
-        return(
-            <div id="test" className={styles.container} style={{backgroundColor:'red'}}>
-                <p className={styles.status}>
-                   Rejected
-                </p>
-            </div>
-        )
-    }
-    else if (status = "Pending"){
-        return(
-            <div id="test" className={styles.container} style={{backgroundColor:'black'}}>
-                <p className={styles.status}>
-                   Pending
-                </p>
-            </div>
-        )
-    }
-    
-}
+
 
 export default function CollapseCard({product}) {
     const [open, setOpen] = React.useState(false);
@@ -72,7 +41,9 @@ export default function CollapseCard({product}) {
                 </div>
             </ListItemIcon>
             <ListItemText primary={product.data.name} />
-            <Status status = {statuss} />
+            {product.data.status == "Accepted" && (<div style={{marginRight:'12px',backgroundColor:'rgb(222, 254, 222)',padding:'10px',borderRadius:'5px'}}>Approved</div>)}
+            {product.data.status == "Rejected" && (<div style={{marginRight:'12px',backgroundColor:'rgb(255, 223, 223)',padding:'10px',borderRadius:'5px'}}>Rejected</div>)}
+            {product.data.status == "Pending" && (<div style={{marginRight:'12px',backgroundColor:'rgb(233, 233, 233)',padding:'10px',borderRadius:'5px'}}>Approved</div>)}
             {open ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
 

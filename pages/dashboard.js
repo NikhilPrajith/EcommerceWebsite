@@ -55,6 +55,7 @@ export default function Dashboard({products}) {
       owner: user.uid,
       pictures: [pic1,pic2,pic3,pic4],
       price: price*1.0,
+      status:'Pending'
     });
     console.log(addData);
     setOpen(false);
