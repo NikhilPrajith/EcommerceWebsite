@@ -37,7 +37,8 @@ const SignUpForm = () => {
                     userId: userData.user.uid,
                     name: userData.user.displayName,
                     accountType:userType,
-                    status: "Inavlid"
+                    status: "Inavlid",
+                    message: 'Your application for OU is under consideration, please be patient!'
 
                 };
                 console.log(db);

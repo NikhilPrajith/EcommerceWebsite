@@ -73,7 +73,7 @@ export default function SideOverlay({open,setOpen,data}) {
                         return (
                           <div style={{width:'100%',display:'flex',height:'100px',paddingTop:'10px',paddingBottom:'10px',borderBottom:'0.8px grey solid',borderTop:'0.8px grey solid'}}>
                             <div style={{width:'100%',height:'100%',display: 'flex',flexDirection: 'column', justifyContent: 'center'}}>
-                              <div>Account id:<div style={{fontWeight:'900',fontSize:'10px'}}>{key}</div></div>
+                              <div>User id:<div style={{fontWeight:'900',fontSize:'10px'}}>{`${key}`.slice(0,5)}...</div></div>
                             </div>
                             <div style={{width:'30%',height:'80px',overflow:'hidden',display: 'flex',flexDirection: 'column', justifyContent: 'center'}}>
                               <div>$ {data[key]}</div>

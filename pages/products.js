@@ -20,6 +20,18 @@ function Home({prods}) {
   const filterFunction = (query)=>{
     console.log("sadasdsa");
     console.log(query);
+    if(query == ""){
+      console.log("CaaseA")
+      setProductsToShow(allProducts);
+    }else{
+      console.log("Case B")
+      var filtered_data = allProducts.filter(function(item) {
+        console.log(item.data.category)
+        return (item.data.name.toLowerCase().includes(query.toLowerCase()) || item.data['category'].toLowerCase().includes(query.toLowerCase()));
+      })
+      setProductsToShow(filtered_data)
+      console.log(filtered_data)
+    }
   }
 
   return (

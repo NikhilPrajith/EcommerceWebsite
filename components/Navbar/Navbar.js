@@ -35,23 +35,19 @@ const Navbar = ({userName}) => {
                 <div className={styles.navRight}>
                     <div className={styles.options}>
                         <div style={{display:'flex'}}>
-                            <div>Explore</div>
-                            <div>Trending</div>
-                            <div>Latest</div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
                             <div>{""}</div>
                         </div>
                     </div>
                     
                     <div className={styles.profile}>
-                        <div className={styles.profilePic}><img src={profilePics[randomNum]}/></div>
                         <div className={styles.signedInUser}>{user ? user.displayName : "Guest"}</div>
 
                         {!data.accountType && (<div onClick={()=>{router.push("/login")}}  className={styles.loginButton}>Login</div>)}
                         {data.accountType && data.accountType !='Guest' && (<div onClick={()=>{router.push(`/dashboard?user=${user.uid}`)}}  className={styles.profileButton}>Profile</div>)}
 
-                    </div>
-                    <div className={styles.shopping}>
-                        <CgShoppingBag style={{cursor:'pointer',fontSize:'20px !important'}}></CgShoppingBag>
                     </div>
                 </div>
             </div>

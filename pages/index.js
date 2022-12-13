@@ -87,7 +87,8 @@ function Home({prods}) {
 
 export async function getServerSideProps() {
   const getData1 = async ()=>{
-    const querySnapshot = await getDocs(collection(db, "products"));
+    const q = query(collection(db, "products"), where("status", "==", "Accepted"));
+    const querySnapshot = await getDocs(q);
     const data = [];
     querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots

@@ -3,6 +3,8 @@ import { useRouter } from 'next/router'
 import styles from "./Banner.module.css";
 import {CgSearch} from 'react-icons/cg'
 
+import TextField from '@mui/material/TextField';
+
 
 const Banner = ({filterFunc}) => {
     return (

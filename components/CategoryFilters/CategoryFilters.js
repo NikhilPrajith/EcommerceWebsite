@@ -3,6 +3,8 @@ import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import ProductGrid from '../Product/productGrid'
+import { collection, query, where, getDocs,doc,getDoc,setDoc } from "firebase/firestore";
+import { db,auth } from '../../firebase-config'
 
 const sortOptions = [
   { name: 'Most Popular', href: '#', current: true },
@@ -60,8 +62,114 @@ function classNames(...classes) {
 export default function CategoryFilter({products}) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
+  const [allProductList,setAllProductsList] = useState(products);
   const [productList, setProductList] = useState(products);
 
+  const getReviews = async (id) =>{
+    const q = query(collection(db, "reports"), where("productId", "==", id));
+    const querySnapshot = await getDocs(q);
+    let reviews =[];
+    let count = 0;
+    querySnapshot.forEach((doc) => {
+      const reviewData = doc.data();
+      if (reviewData['category'] == 'Product'){
+        reviews.push(doc.data())
+        count+=reviewData['rating']
+      }
+    });
+
+    return [reviews,Math.floor(count/reviews.length)]
+  
+  }
+
+  const selectBoxClicked = async () =>{
+    console.log("-------");
+    console.log(filters);
+
+    var bidCheckedCount =0;
+    var filtered_data = allProductList.filter(function(item) {
+      let bidRanges = filters[0].options
+      for (var i = 0; i < bidRanges.length; i++) {
+        if(bidRanges[i].checked ==true){
+          bidCheckedCount +=1;
+          if (bidRanges[i].value == "20" && item.data.price < 20.0){
+            return item
+          }else if(bidRanges[i].value =="50" && item.data.price>=20.0 && item.data.price <=50.0){
+            return item
+          }else if(bidRanges[i].value =="100" && item.data.price>=50.0 && item.data.price <=100.0){
+            return item
+          }else if(bidRanges[i].value =="500" && item.data.price>=100.0 && item.data.price <=500.0){
+            return item
+          }else if(bidRanges[i].value =="1000" && item.data.price>500.0 && item.data.price <=1000.0){
+            return item
+          }else if(bidRanges[i].value =="1000Plus" && item.data.price>1000.0){
+            return item
+          }
+        }
+      }
+    })
+    if(bidCheckedCount ==0){
+      filtered_data = allProductList;
+    }
+    var filtCheckCount =0;
+    var filtered_data2 = filtered_data.filter(function(item) {
+      let filter = filters[1].options
+      for (var i = 0; i < filter.length; i++) {
+        if(filter[i].checked ==true){
+          filtCheckCount+=1
+          if(filter[i].value =="new-arrivals" && !("Bids" in item.data)){
+            return item
+          }
+          if(filter[i].value =="popular" && ("Bids" in item.data)){
+            return item
+          }
+        }
+      }
+    })
+    if(filtCheckCount ==0){
+      filtered_data2 = filtered_data;
+    }
+
+    var ratingCheckedCount =0;
+    var filtered_data3 = filtered_data2.filter(async function(item) {
+      let rating = filters[2].options
+      let prodRating = await getReviews(item.id);
+      for (var i = 0; i < rating.length; i++) {
+        if(rating[i].checked ==true){
+          console.log("checked",rating[i].value,prodRating)
+          ratingCheckedCount+=1
+          if(rating[i].value =="no-rating" && prodRating[1] == NaN){
+            console.log("none");
+            return item
+          }
+          if(rating[i].value =="1star" && prodRating[1]>=0.0 && prodRating[1] <=1.0){
+            return item
+          }
+          if(rating[i].value =="2star" && prodRating[1]>=1.0 && prodRating[1] <=2.0){
+            return item
+          }
+          if(rating[i].value =="3star" && prodRating[1]>=2.0 && prodRating[1] <=3.0){
+            return item
+          }
+          if(rating[i].value =="4star" && prodRating[1]>=3.0 && prodRating[1] <=4.0){
+            return item
+          }
+          if(rating[i].value =="5star" && prodRating[1]>=4.0 && prodRating[1] <=5.0){
+            return item
+          }
+        }
+      }
+    })
+    if(ratingCheckedCount ==0){
+      filtered_data3 = filtered_data2;
+    }
+
+
+
+    setProductList(filtered_data3);
+      
+
+  }
   
   return (
     <div className="bg-white">
@@ -267,6 +375,7 @@ export default function CategoryFilter({products}) {
                                   defaultValue={option.value}
                                   type="checkbox"
                                   defaultChecked={option.checked}
+                                  onClick={()=>{option.checked =!option.checked,selectBoxClicked(); }}
                                   className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                 />
                                 <label
@@ -288,7 +397,7 @@ export default function CategoryFilter({products}) {
               {/* Product grid */}
               <div className="lg:col-span-3">
                 {/* Replace with your content */}
-                <ProductGrid products={products} type="categoryList"></ProductGrid>
+                <ProductGrid products={productList} type="categoryList"></ProductGrid>
                 
                 {/* /End replace */}
               </div>

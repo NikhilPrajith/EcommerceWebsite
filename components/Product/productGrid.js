@@ -4,7 +4,6 @@ import Link from "next/link";
   
 const ProductGrid = ({products,type}) => {
     useEffect(()=>{
-        console.log("hh",products);
 
     })
     switch(type){

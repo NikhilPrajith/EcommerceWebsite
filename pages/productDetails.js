@@ -322,7 +322,7 @@ export default function ProductDetails({reviews, prodData,highestBidder,productI
             </div>
           </div>  
           {/*SlideOverlay for all bids*/}
-          <SideOverlay open={overlayOpen} setOpen={setOverlayOpen} prodData={prodData['Bids']}></SideOverlay>
+          <SideOverlay open={overlayOpen} setOpen={setOverlayOpen} data={prodData.Bids}></SideOverlay>
 
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pt-6 lg:pb-16 lg:pr-8">
             {/* Description and details */}
@@ -432,12 +432,14 @@ export async function getServerSideProps(context) {
         maxKey = key;
       }
     }
-    bidderId = maxKey;
-    const userRef = doc(db, "users", maxKey);
-    const docSnap = await getDoc(userRef);
-    const temp =  docSnap.data();
-    bidder = temp['name'];
-
+    if (maxKey != ""){
+    
+      bidderId = maxKey;
+      const userRef = doc(db, "users", maxKey);
+      const docSnap = await getDoc(userRef);
+      const temp =  docSnap.data();
+      bidder = temp['name'];
+    }
   }
   return {
     props: {

@@ -1,0 +1,11 @@
+.frame1{
+    background-position: center;
+    background-size: cover;
+}
+/* 313030f0 */
+.parent{
+    color: #313030f0;
+    padding:20px;
+    padding-left: 40px;
+    border-right: 0.2px black solid;
+}

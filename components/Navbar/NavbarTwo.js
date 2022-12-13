@@ -35,9 +35,9 @@ const NavbarTwo = ({userName}) => {
                 <div className={styles.navRight}>
                     <div className={styles.options}>
                         <div style={{display:'flex'}}>
-                            <div>Explore</div>
-                            <div>Trending</div>
-                            <div>Latest</div>
+                            <div onClick={()=>router.push("/products")} >Explore</div>
+                            <div onClick={()=>router.push("/products")} >Trending</div>
+                            <div onClick={()=>router.push("/products")} >Latest</div>
                             <div>{""}</div>
                         </div>
                     </div>

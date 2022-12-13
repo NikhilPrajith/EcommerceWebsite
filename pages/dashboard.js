@@ -2,7 +2,7 @@ import Head from 'next/head'
 import LoginForm from '../components/LoginForm/LoginForm'
 import styles from "../styles/dashboard.module.css"
 import { auth,db } from '../firebase-config' 
-import { doc, setDoc, addDoc,collection,query,where,getDocs } from "firebase/firestore"; 
+import { doc,getDoc, setDoc, addDoc,collection,query,where,getDocs } from "firebase/firestore"; 
 import { signOut } from 'firebase/auth'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
@@ -16,8 +16,13 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import TabView from "../components/DashboardTabViews/TabView"
 import UserInfo from '../components/UserInfoCard/UserInfo';
 
+import Button from '@mui/material/Button';
 
-export default function Dashboard({products}) {
+import EditInfoOverlay from '../components/Simpleoverlay/EditInfoOverlay';
+import AddMoneyOverlay from '../components/Simpleoverlay/AddMoneyOverlay';
+
+
+export default function Dashboard({products,biddedProds}) {
   const router = useRouter();
   const {logout} = useAuth();
   const [open, setOpen] = useState(false)
@@ -32,6 +37,9 @@ export default function Dashboard({products}) {
   const[pic3,setPic3] = useState(null);
   const[pic4,setPic4] = useState(null);
   const[price,setPrice] = useState(null);
+  const [accountInfoEditOpen, setAccountEditInfoOpen] = useState(false);
+
+  const[addBalance,setAddBalance] = useState(false)
 
   //clearly not the way to do protected routing but it's simple to do this way, so why not? We, can change it later
   const {user,data} = useAuth();
@@ -40,9 +48,10 @@ export default function Dashboard({products}) {
       console.log("gereea");
       router.push("/admin")
     }else{
-      console.log(data)
+      console.log(data);
+      console.log(biddedProds,"ASasdasdd");
     }
-  },[data])
+  },[data,biddedProds])
 
   const submitProductApplication  = async () => {
     //Need to do error handiling
@@ -61,24 +70,37 @@ export default function Dashboard({products}) {
     setOpen(false);
   }
 
+  const replaceRouter = () =>{
+    router.replace(router.asPath);
+  }
 
 
   return (
-    <div>
+    <div style={{marginBottom:'150px'}}>
+        <EditInfoOverlay open={accountInfoEditOpen} setOpen={setAccountEditInfoOpen} replaceRouter={replaceRouter}></EditInfoOverlay>
+        <AddMoneyOverlay open={addBalance} setOpen={setAddBalance}></AddMoneyOverlay>
         <NavbarTwo></NavbarTwo>
-        {data["status"]=="invalid" && <div>Your application for a OU account is under review. Please be patient!</div>}
-        <UserInfo></UserInfo>
+        <div style={{display:'flex'}}>
+          <div style={{width:'80%'}}><UserInfo></UserInfo></div>
+          <div style={{width:'20%'}}>
+            <Button onClick={()=>{setOpen(true)}} style={{color:'black',width:'100%',padding:'20px'}} variant="text">Product Application</Button>
+            <Button onClick={()=>{setAccountEditInfoOpen(true)}} style={{color:'black',width:'100%',padding:'20px'}} variant="text">Edit Information</Button>
+
+            <Button onClick={()=>{setAddBalance(true)}} style={{color:'black',width:'100%',padding:'20px'}} variant="text">Add money</Button>
+
+            <Button onClick={logout} style={{color:'black',width:'100%',padding:'20px'}} variant="text">Logout</Button>
+          </div>
+        </div>
+        {data["status"]=="invalid" && (<div style={{padding: '50px', backgroundColor: 'rgb(238, 238, 238)',color: 'rgb(116, 116, 116)',textAlign: 'center',borderRadius: '8px'}}>
+          {data['message']}</div>)}
+
         {data["status"] =="active" && 
           <div>
-
-            <div>You now have the access to submit product applications</div>
-            <span onClick={()=>{setOpen(true)}} style ={{border:'1px black solid'}}>List Product</span>
-            <TabView products={products}></TabView>
+            <div style={{fontWeight:'900',fontSize:'25px',marginLeft:'40px',marginTop:'30px'}}>Account History</div>
+            <TabView products={products} bidded={biddedProds}></TabView>
           </div>
           
         }
-        
-        <button onClick={logout}>Logout</button>
         
 
 
@@ -278,9 +300,9 @@ export default function Dashboard({products}) {
 
 
 export async function getServerSideProps(context) {
+
+  const uid = context.query.user;
   const getData1 = async ()=>{
-    const uid = context.query.user;
-    console.log("asdasdas",uid);
     const q = query(collection(db, "products"), where("owner", "==", uid));
     const querySnapshot = await getDocs(q);
     let products = [];
@@ -292,10 +314,40 @@ export async function getServerSideProps(context) {
     });
     return products;
   }
+
+  
+
+  const getBiddedData = async ()=>{
+    let bidded = []
+    const docRef = doc(db, "users", uid);
+    const docSnap = await getDoc(docRef);
+    const userData = docSnap.data();
+
+    let bidsPlaced = []
+    if("bidPlaced" in userData){
+      bidsPlaced = userData['bidPlaced'];
+    }
+    for(const [key, value] of Object.entries(bidsPlaced)) {
+      const prodRef = doc(db, "products", key);
+      const prodSnap = await getDoc(prodRef);
+      const prodData = prodSnap.data();
+      const adding_Data = {"data":prodData,"bidPrice":value,"prodId":key};
+      bidded.push(adding_Data)
+
+    }
+    return bidded;
+  }
+
+  
+
+  const biddedProds = await getBiddedData();
+
+  console.log("addd",biddedProds);
   const products = await getData1();
   return {
     props: {
         products: products,
+        biddedProds: biddedProds,
       }, 
   }
 
