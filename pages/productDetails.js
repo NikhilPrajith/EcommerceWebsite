@@ -145,7 +145,7 @@ export default function ProductDetails({reviews, prodData,highestBidder,productI
 
   return (
     <>
-    <ReviewForm productId={productId} name={data['name']} open={reviewOpen} setOpen={setReviewOpen} cancelButtonRef={reviewCancelButtonRef}></ReviewForm>
+    <ReviewForm productId={productId} owner={prodData.owner} name={data['name']} open={reviewOpen} setOpen={setReviewOpen} cancelButtonRef={reviewCancelButtonRef}></ReviewForm>
     <Navbar></Navbar>
     <div className="bg-white">
       <div className="pt-6">
@@ -231,7 +231,7 @@ export default function ProductDetails({reviews, prodData,highestBidder,productI
             </div>
 
             <div className="mt-10">
-              {user && (<button
+              {user && data.status != "invalid" && (<button
                 type="submit"
                 onClick={()=>{prodData['owner'] != user.uid && setOpen(true)}}
                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent

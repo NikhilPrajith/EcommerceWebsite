@@ -45,6 +45,9 @@ export default function OverlayCenter({open,setOpen,acceptBidFunc}) {
                           Please make sure you are certain of accepting this bid.
                         </p>
                       </div>
+                      <div>
+                        <input placeholder='Write a reason....'></input>
+                      </div>
                     </div>
                   </div>
                 </div>

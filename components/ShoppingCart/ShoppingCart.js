@@ -2,7 +2,7 @@ import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import useAuth from '../../context/Authentication/AuthProvider'
-import { doc, setDoc } from "firebase/firestore"; 
+import { doc, setDoc,getDoc } from "firebase/firestore"; 
 import { db,auth } from '../../firebase-config';
 
 
@@ -20,6 +20,14 @@ export default function ShoppingCart({open,setOpen, productDetail}) {
       setError("Not enough money!");
       return;
     }
+    if (!(data.address)){
+      setError("No address provided!!");
+      return;
+    }
+    if (!(data.phone)){
+      setError("No phone provided!!");
+      return;
+    }
     
     walletBallance -= productDetail.data.price;
     let bidsAccept = productDetail.data.bidAccepted;
@@ -30,6 +38,22 @@ export default function ShoppingCart({open,setOpen, productDetail}) {
 
     const ref2 = await doc(db, 'users', data.userId);
     await setDoc(ref2, { wallet: walletBallance }, { merge: true });
+
+    /*give money to the owner */
+    const docRef = doc(db, "users", productDetail.data.owner);
+    const docSnap = await getDoc(docRef);
+    const dataForOwner = docSnap.data();
+
+    let ownerWallet = dataForOwner.wallet
+    if (!ownerWallet){
+      ownerWallet = 0;
+    }
+    ownerWallet += productDetail.data.price
+
+    const ref3 = await doc(db, 'users', productDetail.data.owner);
+    await setDoc(ref3, { wallet: ownerWallet }, { merge: true });
+
+
 
     setOpen(false);
   }

@@ -15,6 +15,10 @@ import {FaMoneyBillAlt} from 'react-icons/fa'
 //#e0e0e05c
 const UserInfo = ({userName}) => {
     const {user,data} = useAuth();
+
+    const [profilePics,setProfilePics] = useState(["https://images.pexels.com/photos/4046718/pexels-photo-4046718.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    "https://images.pexels.com/photos/7260250/pexels-photo-7260250.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+    ,"https://images.pexels.com/photos/921294/pexels-photo-921294.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"])
     return (
       <div className={styles.parent} style={{background:'#e0e0e05c', width:'100%', height:'250px', display:'flex', flexDirection:'column' ,alignContent:'center',justifyContent:'space-around'}}>
         <div style={{fontSize:'25px',fontWeight:'900',marginBottom:'20px'}}>User Information</div>

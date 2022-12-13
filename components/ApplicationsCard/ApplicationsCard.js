@@ -7,17 +7,21 @@ import { db } from "../../firebase-config";
 
 const ApplicationsCard = ({apps, approve, reject}) => {
     const router = useRouter();
+
+    const [message,setMessage] = useState("Your OU application was approved!");
     const approveUser= async (uid)=>{
         console.log(uid);
         await updateDoc(doc(db, "users", uid), {
-            status:'active'
+            status:'active',
+            message:message,
           });
         router.replace(router.asPath);
     };
     const rejectUser= async (uid)=>{
         console.log(uid);
         await updateDoc(doc(db, "users", uid), {
-            status:'invalid'
+            status:'invalid',
+            message: message
           });
         router.replace(router.asPath);
     };
@@ -34,9 +38,10 @@ const ApplicationsCard = ({apps, approve, reject}) => {
                         <div className={k['data'].status =='active' ? styles.active:styles.invalid}>{k['data'].status}</div>
                     </div>
                     <div className={styles.cardRight}>
-                        <button onClick={()=>{approveUser(k['id'])}} className={styles.approve}>Approve</button>
-                        <button onClick={()=>{rejectUser(k['id'])}} className={styles.reject}>Reject</button>
+                        <button onClick={()=>{approveUser(k['id'])}} className={styles.approve} style={{color:'green',marginRight:'10px'}}>Approve</button>
+                        <button onClick={()=>{rejectUser(k['id'])}} className={styles.reject}  style={{color:'red',marginRight:'10px'}}>Reject</button>
                     </div>
+                    <input onChange={(evt)=>setMessage(evt.target.value)} placeholder="Input message" style={{color:'black'}}></input>
                 </div>
             ))}
 

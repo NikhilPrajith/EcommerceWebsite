@@ -17,6 +17,7 @@ export default function EditInfoOverlay({open,setOpen,replaceRouter}) {
   const [phone,setPhone] = useState(null);
   const [card,setCard] = useState(null);
   const [password,setNewPassword] = useState(null);
+  const[profile,setProfile] = useState(null);
   const router = useRouter();
 
     useEffect(() => {
@@ -30,7 +31,7 @@ export default function EditInfoOverlay({open,setOpen,replaceRouter}) {
     const submitChanges = () =>{
 
         const dataRef = doc(db, 'users', data.userId);
-        setDoc(dataRef, { name: name, password:password,address:address,card:card,phone:phone }, { merge: true });
+        setDoc(dataRef, { name: name, password:password,address:address,card:card,phone:phone, profilePic:profile}, { merge: true });
 
         replaceRouter();
         setOpen(false);
@@ -89,6 +90,20 @@ export default function EditInfoOverlay({open,setOpen,replaceRouter}) {
                                   id="product-name"
                                   onChange={(evt)=>setName(evt.target.value)}
                                   value={name}
+                                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm"
+                                />
+                              </div>
+                              <div className="col-span-6 sm:col-span-6">
+                                <label htmlFor="product-name" className="block text-sm font-medium text-gray-700">
+                                  Profile Picture URL*
+                                </label>
+                                <input
+                                  required
+                                  type="text"
+                                  name="productName"
+                                  id="product-name"
+                                  onChange={(evt)=>setProfile(evt.target.value)}
+                                  value={profile}
                                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm"
                                 />
                               </div>

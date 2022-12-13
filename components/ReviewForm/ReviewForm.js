@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import {format} from 'date-fns'
 
 
-const ReviewForm = ({productId, open,setOpen,cancelButtonRef,name}) => {
+const ReviewForm = ({productId, open,setOpen,cancelButtonRef,name,owner}) => {
     const [title,setTitle] = useState(null);
     const [desc,setDesc] = useState(null);
     const [category,setCategory] = useState("Product");
@@ -30,6 +30,7 @@ const ReviewForm = ({productId, open,setOpen,cancelButtonRef,name}) => {
             rating:rating,
             category:category,
             date:format(new Date(), 'MM-dd-yyyy'),
+            productOwner:owner,
         });
         setOpen(false);
         router.replace(router.asPath);

@@ -7,9 +7,10 @@ import TabPanel from '@mui/lab/TabPanel';
 import ProductList from "../Lists/ProductLists"
 import ProductList2 from '../Lists/ProductLists2';
 import { useEffect } from 'react';
+import ReviewApplicationsCard from '../ApplicationsCard/ReviewApplicationCard';
 
 
-const TabView = ({products,bidded}) => {
+const TabView = ({products,bidded,reportsReviews}) => {
     const [value, setValue] = React.useState('1');
 
     const handleChange = (event, newValue) => {
@@ -36,7 +37,10 @@ const TabView = ({products,bidded}) => {
                 </TabPanel>
                 
                     
-                <TabPanel value="3">Item Three</TabPanel>
+                <TabPanel value="3">
+                    
+                    <ReviewApplicationsCard apps={reportsReviews}></ReviewApplicationsCard>
+                </TabPanel>
             </TabContext>
         </Box>
       );

@@ -43,6 +43,8 @@ const Navbar = ({userName}) => {
                     </div>
                     
                     <div className={styles.profile}>
+
+                        <div className={styles.profilePic}><img src={profilePics[randomNum]}/></div>
                         <div className={styles.signedInUser}>{user ? user.displayName : "Guest"}</div>
 
                         {!data.accountType && (<div onClick={()=>{router.push("/login")}}  className={styles.loginButton}>Login</div>)}

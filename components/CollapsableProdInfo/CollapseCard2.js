@@ -60,7 +60,7 @@ export default function CollapseCard2({product}) {
             <div style={{display:'flex',marginRight:'15px', textAlign:'end',}}>{("bidAccepted" in product.data && (data) && (`${data.userId}` in product.data['bidAccepted'])) &&(<div style={{}}>
                 <div>Bid Accepted</div>
                 {product.data['bidAccepted'][`${data.userId}`] == "Need Payment" && (<div style={{color:'grey'}}>Complete Payment</div>)}
-                {product.data['bidAccepted'][`${data.userId}`] == "Payment Complete" && (<div style={{color:'green'}}>Complete Payment</div>)}
+                {product.data['bidAccepted'][`${data.userId}`] == "Payment Complete" && (<div style={{color:'green'}}>Transaction Complete</div>)}
             </div>)}</div> 
             {product.data.price >product.bidPrice && (<div style={{marginRight:'12px',backgroundColor:'rgb(255, 223, 223)',padding:'10px',borderRadius:'5px'}}>Low Bid</div>)}
             {product.data.price == product.bidPrice && (<div style={{marginRight:'12px',backgroundColor:'rgb(233, 233, 233)',padding:'10px',borderRadius:'5px'}}>Highest Bidder</div>)}

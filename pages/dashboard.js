@@ -22,7 +22,7 @@ import EditInfoOverlay from '../components/Simpleoverlay/EditInfoOverlay';
 import AddMoneyOverlay from '../components/Simpleoverlay/AddMoneyOverlay';
 
 
-export default function Dashboard({products,biddedProds}) {
+export default function Dashboard({products,biddedProds,reportsReviews}) {
   const router = useRouter();
   const {logout} = useAuth();
   const [open, setOpen] = useState(false)
@@ -44,13 +44,7 @@ export default function Dashboard({products,biddedProds}) {
   //clearly not the way to do protected routing but it's simple to do this way, so why not? We, can change it later
   const {user,data} = useAuth();
   useEffect(()=>{
-    if(data.accountType == "Super User"){
-      console.log("gereea");
-      router.push("/admin")
-    }else{
-      console.log(data);
-      console.log(biddedProds,"ASasdasdd");
-    }
+    console.log(data)
   },[data,biddedProds])
 
   const submitProductApplication  = async () => {
@@ -91,13 +85,14 @@ export default function Dashboard({products,biddedProds}) {
             <Button onClick={logout} style={{color:'black',width:'100%',padding:'20px'}} variant="text">Logout</Button>
           </div>
         </div>
-        {data["status"]=="invalid" && (<div style={{padding: '50px', backgroundColor: 'rgb(238, 238, 238)',color: 'rgb(116, 116, 116)',textAlign: 'center',borderRadius: '8px'}}>
+        {(data["status"]=="Inavlid" || data["status"]=="invalid" || data["status"]=="rejected") && (<div style={{padding: '50px', backgroundColor: 'rgb(238, 238, 238)',color: 'rgb(116, 116, 116)',textAlign: 'center',borderRadius: '8px'}}>
           {data['message']}</div>)}
 
+        {data.accountType == "Super User" &&(<Button onClick={()=>{router.push("/admin")}} style={{color:'black',width:'100%',padding:'20px'}} variant="text">Admin Dashboard</Button>)}
         {data["status"] =="active" && 
           <div>
             <div style={{fontWeight:'900',fontSize:'25px',marginLeft:'40px',marginTop:'30px'}}>Account History</div>
-            <TabView products={products} bidded={biddedProds}></TabView>
+            <TabView products={products} bidded={biddedProds} reportsReviews={reportsReviews}></TabView>
           </div>
           
         }
@@ -338,8 +333,19 @@ export async function getServerSideProps(context) {
     return bidded;
   }
 
-  
-
+  const getData2 = async ()=>{
+    const q = query(collection(db, "reports"), where("productOwner", "==", uid));
+    const querySnapshot = await getDocs(q);
+    let products = [];
+    await querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      console.log("DATA :", doc.id)
+      const prod = {id:doc.id, data: doc.data()};
+      products.push(prod);
+    });
+    return products;
+  }
+  const reviews = await getData2();
   const biddedProds = await getBiddedData();
 
   console.log("addd",biddedProds);
@@ -348,6 +354,7 @@ export async function getServerSideProps(context) {
     props: {
         products: products,
         biddedProds: biddedProds,
+        reportsReviews: reviews
       }, 
   }
 
